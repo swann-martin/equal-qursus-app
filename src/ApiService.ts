@@ -297,7 +297,7 @@ export class _ApiService {
                 data: params,
                 contentType: 'application/x-www-form-urlencoded; charset=utf-8'
             });
-            // reponse should be an array of ids
+            // response should be an array of ids
             result = response;
         }
         catch (response: any) {
