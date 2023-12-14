@@ -5,6 +5,11 @@ import { EnvService, ApiService } from "./qursus-services";
 import GroupClass from "./Group.class";
 
 
+declare global {
+    interface Window { hljs: any; }
+}
+
+
 /**
  *
  */
@@ -116,7 +121,7 @@ export class WidgetClass {
 
         // this.setContext(context);
 
-        let content = this.content;
+        let content:any = this.content;
 
         let widget_classes = 'widget';
 
@@ -137,6 +142,33 @@ export class WidgetClass {
         widget_classes += ' align-'+align;
 
         switch(this.type) {
+            case 'code':
+                // normalize code : remove html layout
+                content = $(content.replace(/<br>/g, "").replace(/<\/p><p>/g, "\n")).text();
+                // identify target lang
+                let target_lang = 'javascript';
+                let clues:any = {
+                    'php': ['```php'],
+                    'javascript': ['```javascript']
+                };
+                for(let lang in clues) {
+                    let lang_clues = clues[lang];
+                    let found = false;
+                    for(let clue of lang_clues) {
+                        if(content.indexOf(clue) !== -1) {
+                            // remove line containing clue
+                            content = content.split('\n').filter((line:string) => (line.indexOf(clue) == -1)).join('\n');
+                            target_lang = lang;
+                            found = true;
+                            break ;
+                        }
+                        if(found) {
+                            break;
+                        }
+                    }
+                }
+                content = '<pre style="background: #282c34; text-align: left; padding: 0 5px; border-radius: 5px;" data-lang="'+target_lang+'">' + window.hljs.highlight(content, { language: target_lang }).value.replace(/\n/g, "<br />") + '</pre>';
+                break;
             case 'page_title':
             case 'chapter_title':
             case 'chapter_description':
@@ -234,7 +266,7 @@ export class WidgetClass {
                     }
                     break;
                 case 'image_full()':
-                    if(['image_popup', 'selector_popup'].includes(this.type) && this.image_url && this.image_url.length) {
+                    if(['image_popup', 'selector_popup'].indexOf(this.type) > -1 && this.image_url && this.image_url.length) {
                         this.$container.on('click', () => {
                             if(this.type == 'selector_popup') {
                                 this.$container.addClass('previously_selected');

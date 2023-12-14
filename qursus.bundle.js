@@ -2576,7 +2576,7 @@ var Qursus;
             value: function init() {
               var _this = this;
               this.$container = (0, _jqueryLib.$)("<div class=\"module-container viewport-container\" />").append((0, _jqueryLib.$)("<div class=\"container-inner\" />")).appendTo('body');
-              var $prev = (0, _jqueryLib.$)('<div class="page-nav-prev page-nav"><i class="arrow material-icons" style="margin-left: -4px;">chevron_left</i></div>').on('click', function () {
+              function goToPreviousPage() {
                 var chapter_context = _this.chapters[_this.context.chapter_index].getContext();
                 var chapter_page_index = chapter_context.page_index;
                 console.log('page-nav-prev::click', chapter_context);
@@ -2600,8 +2600,11 @@ var Qursus;
                     _this.onContextChange({});
                   }
                 }
-              });
-              var $next = (0, _jqueryLib.$)('<div class="page-nav-next page-nav"><i class="arrow material-icons">chevron_right</i></div>').on('click', function () {
+              }
+
+              var $prev = (0, _jqueryLib.$)('<div class="page-nav-prev page-nav"><i class="arrow material-icons">chevron_left</i></div>')
+              $prev.on('click', goToPreviousPage);
+              function goToNextPage() {
                 var chapter_context = _this.chapters[_this.context.chapter_index].getContext();
                 console.log('page-nav-next::click', _this.context, chapter_context, _this.chapters[_this.context.chapter_index].pages.length);
 
@@ -2614,7 +2617,7 @@ var Qursus;
                     _this.context.next_active = true;
                     _this.$container.find('.page-nav-next').show();
                   } else {
-                    // next_active depends on domain of current page 
+                    // next_active depends on domain of current page
                     _this.context.next_active = false;
                     _this.$container.find('.page-nav-next').hide();
                   }
@@ -2646,6 +2649,14 @@ var Qursus;
                     page_index: _this.context.page_index
                   });
                 }
+
+              }
+              var $next = (0, _jqueryLib.$)('<div class="page-nav-next page-nav"><i class="arrow material-icons">chevron_right</i></div>');
+              $next.on('click', goToNextPage);
+              // add possibility to navigate using arrow buttons
+              $(document).on('keydown', (event) => {
+                if (event.which === 39) { goToNextPage() };
+                if (event.which === 37) { goToPreviousPage() };
               });
               if (this.context.mode == 'view') {
                 $next.hide();

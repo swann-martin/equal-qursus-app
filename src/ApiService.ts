@@ -85,7 +85,7 @@ export class _ApiService {
                 lang: environment.lang
             };
             const response = await $.get({
-                url: environment.rest_api_url + '?do=model_create',
+                url: environment.backend_url + '?do=model_create',
                 dataType: 'json',
                 data: params,
                 contentType: 'application/x-www-form-urlencoded; charset=utf-8'

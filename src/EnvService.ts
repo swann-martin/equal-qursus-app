@@ -9,8 +9,8 @@ export class _EnvService {
     private default: any = {
         production: false,
         parent_domain: 'equal.local',
-        backend_url: 'http://wpeq.local/equal.php',
-        rest_api_url: 'http://wpeq.local/',
+        backend_url: 'http://equal.local',
+        rest_api_url: 'http://equal.local/',
         lang: 'en',
         locale: 'en'
     };
