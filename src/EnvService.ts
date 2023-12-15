@@ -1,12 +1,48 @@
+export type EnvironmentType = {
+    app_logo_url?: string,
+    app_name?: string,
+    app_settings_root_package?: string,
+    backend_url?: string,
+    rest_api_url?: string,
+    company_name?: string,
+    company_url?: string,
+    lang?: string
+    license?: string,
+    license_url?: string,
+    locale?: string,
+    parent_domain?: string
+    production?: boolean,
+    version?: string,
+    // core?: {
+    //     units?: { currency?: string },
+    //     locale?: {
+    //         currency?: {
+    //             symbol_position?: string,
+    //             decimal_precision?: string,
+    //         },
+    //         numbers?: {
+    //             thousands_separator?: string,
+    //             decimal_separator?: string
+    //         }
+    //     },
+    // }
+    'core.locale.numbers.decimal_precision'?: number,
+    'core.locale.numbers.decimal_separator'?: string,
+    'core.locale.numbers.thousands_separator'?: string,
+    'core.locale.currency.decimal_precision'?: number,
+    'core.units.currency'?: string,
+    'core.locale.currency.symbol_position'?: string
+}
+
 /**
  * This service centralizes environment vars
  */
 export class _EnvService {
 
-    private environment: any = null;
+    private environment: EnvironmentType | null = null;
     private promise: any = null;
 
-    private default: any = {
+    private default: EnvironmentType = {
         production: false,
         parent_domain: 'equal.local',
         backend_url: 'http://equal.local',
@@ -52,16 +88,16 @@ export class _EnvService {
     /**
      * Assign and adapter to support older version of the URL syntax
      */
-    private assignEnv(environment: any) {
+    private assignEnv(environment: EnvironmentType) {
         if (environment.hasOwnProperty('backend_url')) {
-            if (environment.backend_url.replace('://', '').indexOf('/') == -1) {
+            if (environment?.backend_url?.replace('://', '').indexOf('/') == -1) {
                 environment.backend_url += '/';
             }
         }
         this.environment = { ...environment };
     }
 
-    public setEnv(property: string, value: any) {
+    public setEnv<T extends keyof EnvironmentType>(property: T, value: EnvironmentType[T]) {
         if (this.environment) {
             this.environment[property] = value;
         }
@@ -93,8 +129,8 @@ export class _EnvService {
             scale = this.environment['core.locale.currency.decimal_precision'];
         }
         let result = this.formatNumber(value, scale, thousand_sep, decimal_sep);
-        if (this.environment.hasOwnProperty('core.units.currency')) {
-            if (this.environment.hasOwnProperty('core.locale.currency.symbol_position') && this.environment['core.locale.currency.symbol_position'] == 'before') {
+        if (this.environment?.hasOwnProperty('core.units.currency')) {
+            if (this.environment?.hasOwnProperty('core.locale.currency.symbol_position') && this.environment['core.locale.currency.symbol_position'] == 'before') {
                 result = this.environment['core.units.currency'] + ' ' + result;
             }
             else {

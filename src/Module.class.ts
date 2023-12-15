@@ -83,7 +83,7 @@ export class ModuleClass {
     public init() {
 
         this.$container = $("<div class=\"module-container viewport-container\" />").append($("<div class=\"container-inner\" />")).appendTo('body');
-        function goToPreviousPage() {
+        const goToPreviousPage = () => {
             let chapter_context = this.chapters[this.context.chapter_index].getContext();
             let chapter_page_index = chapter_context.page_index;
             console.log('page-nav-prev::click', chapter_context);
@@ -112,7 +112,7 @@ export class ModuleClass {
         }
         let $prev = $('<div class="page-nav-prev page-nav"><i class="arrow material-icons" style="margin-left: -4px;">chevron_left</i></div>').on('click', goToPreviousPage);
 
-        function goToNextPage() {
+        const goToNextPage = () => {
 
             let chapter_context: any = this.chapters[this.context.chapter_index].getContext();
 

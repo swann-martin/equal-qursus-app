@@ -3,6 +3,8 @@
   --contrast-dark: #00164A;
   --contrast-light: white;
   --separator: #f5a623;
+  --selector: #f1c885;
+  --submit-hover: #8d919b;
   --menu-height: 4rem;
 }
 
@@ -221,7 +223,6 @@ body {
 
 .module-container .page-nav .arrow {
   line-height: 75px;
-  width: 25px;
   text-align: center;
   display: inline-block;
   color: white;
@@ -485,6 +486,7 @@ body {
 
 .group>.widget {
   width: 100%;
+  padding: 1rem;
 }
 
 .widget {
@@ -561,7 +563,7 @@ body {
 }
 
 .widget.type-chapter_number {
-  font-size: 180px;
+  font-size: 10rem;
   font-weight: 800;
   text-align: right;
 }
@@ -585,7 +587,7 @@ body {
 }
 
 .widget.type-selector_yes_no:hover {
-  color: #f1c885;
+  color: var(--selector);
 }
 
 .widget.type-page_description {
@@ -765,7 +767,7 @@ body {
 }
 
 .widget.type-submit_button:hover {
-  color: #8d919b;
+  color: var(--submit-hover);
 }
 
 .widget.type-submit_button .arrow {
@@ -810,7 +812,7 @@ body {
   bottom: 0;
   left: 0;
   height: 2px;
-  background-color: #f1c885;
+  background-color: var(--selector);
 }
 
 .widget.type-selector.selected::after,
@@ -1060,7 +1062,7 @@ body {
 }
 
 .widget.type-selector_text {
-  background-color: #f1c885;
+  background-color: var(--selector);
   text-align: center;
 }
 
