@@ -181,13 +181,18 @@ In your terminal you can use the flag --announce to get information about the co
 Fundamentally the qursus application can be schematized this way :
 
 ```bash
-|-Pack
-    |-Module    |- Lang     |- Bundle
-        |-Chapter               |- BundleAttachment
-            |-Page
-                |-Section |- Leaves
-                    |- Page     |- Group
-                                    |- Widgets
+├─Pack
+    ├─Lang
+    ├─Bundle
+        ├─BundleAttachment
+    ├─Module
+        ├─Chapter
+            ├─Page
+                ├─Section
+                    ├─Page
+                ├─Leaves
+                    ├─Group
+                        ├─Widgets
 
 ```
 
@@ -312,7 +317,7 @@ When a bundle is deleted the attachment is removed to. A bundle attachment is de
 
 A Module is a major part in the pack. It contains chapters. A Module is defined by :
  - identifier : integer : a unique identifier of the module
- - order : integer : The position the module is in the pack: *example : 1
+ - order : integer : The position the module is in the pack: *example : 1*
  - name : alias of the title
  - title : string : Description of the module as presented to user.
  - link : computed field : URL to visual editor of the module. *example : http://wpeq.local/qursus/?mode=edit&module=11&lang=en*
@@ -343,7 +348,7 @@ A module is a major part in your course. It will be divided into chapters and pa
 
 A Chapter is a major part in the pack. It contains chapters. A chapter is defined by :
  - identifier | integer | a unique identifier of the chapter
- - order : integer : The position the chapter is in the pack: *example : 1
+ - order : integer : The position the chapter is in the pack: *example : 1*
  - name : alias of the title
  - title : string : Description of the chapter as presented to user. It is a required field.
  - page_count : computed result type integer: Total amount of pages in the chapter.
@@ -365,7 +370,7 @@ You can add a page at the same time.
 
 A page is a part of a chapter. It can represent a lesson or an exercise for example. It contains leaves and sections. Sections can contain a page which itself can contain other sections and leaves. A page is defined by :
  - identifier : integer : a unique identifier of the page within the chapter.
- - order : integer : The position the page is in the chapter: *example : 5
+ - order : integer : The position the page is in the chapter: *example : 5*
  - next_active : computed field result type string :a JSON formatted array of visibility domain for 'next' button.
  - title : string : Description of the page as presented to user. It is a required field.
  - next_active_rule : string : it is select with the following options always visible; page submitted, item selected, 1 or more actions. By default the field is on always visible. On update it changes next_active to null.
@@ -384,7 +389,7 @@ Since you can add actions and conditions on visibility.The second leaf's visibil
 
  A leaf is defined by :
  - identifier : integer : a unique identifier of the leaf within the page.
- - order : integer : The position the leaf is in the page: *example : 1
+ - order : integer : The position the leaf is in the page: *example : 1*
  - visible : computed field result type string, stored: .
  - visibility_rule : string, selection : always visible, selection matched identifier, page submitted or not submitted. When it is updated it changes visible field to null which will trigger calcVisible and the new value for the field visible.
  - groups : alias of groups_ids
@@ -394,6 +399,105 @@ Since you can add actions and conditions on visibility.The second leaf's visibil
  - background_opacity : float :Opacity of the background (from 0 to 1).
  - contrast : string : selection dark or light for the background of the leaf.
  - page_id : relation many2one between the leaf and the page. Many leaves can be in one page.
+![Create Leaf](assets/images/leaf.png)
+
+## Section
+
+ A Section is defined by :
+ - identifier : integer : a unique identifier of the section within the page.
+ - order : integer : The position the section is in the page: *example : 1*
+ - name : computed field result type string, stored: getDisplayName made of the section_id (in the example 65) and the section_identifier (here 1) *example 65-1*.
+ - pages : alias of pages_ids
+ - pages_ids : relation one2many where one section can contain many pages. If the section is detached from the pages it is deleted.
+ - page_id : relation many2one where many sections can be in one page. When the parent page is deleted the sections are deleted.
+
+
+## Group
+
+A leaf can contain  one or several groups. A group will take 1 to a maximum of 8 rows in the leaf. The group will contain widgets.
+
+A Group is defined by :
+ - identifier : integer : a unique identifier of the group within the leaf. When updated, it triggers onupdateVisibility which sets the field visible to null and triggers calcVisible for the field visibility.
+ - order : integer : The position the group is on the leaf: *example by default the value is : 1*
+ - direction :string : direction of the group can be either vertical or horizontal. By default it is selected vertical.
+ - row_span : integer : Height of the group between default 1 and max 8.
+ - visible : computed result type string, it is calculated by calcVisible.
+ - visibility_rule : string with selection of values. The same as page visibility_rule. It triggers onupdateVisibility which sets the field visible to null and triggers calcVisible.
+ - fixed : boolean : If true the group is always visible
+ - widgets : alias of widgets_ids
+ - widgets_ids : relation one2many. One group can have many widgets.
+ - leaf_id : relation many2one. There can be many groups in a leaf.
+
+![Create a group](assets/images/group.png)
+
+
+## Widget
+
+A widget is a what you student will see. It can be a text, an excerpt of code, a chapter title, a video, a sound, an image, a selector
+
+![Widget](assets/images/widget.png)
+
+ - identifier : integer : a unique identifier of the group within the leaf. When updated, it triggers onupdateVisibility which sets the field visible to null and triggers calcVisible for the field visibility.
+ - order : integer : The position the widget is in the group: *example by default the value is : 1*
+ - content : text/plain :  Content of the widget in text with markdown support
+ - group_id : relation many2one many widget can be in one group. When the parent group is deleted, the widgets are deleted.
+ - type : string : the type of the widget can be many things in the  'selection'         => [
+                    'text'                  => 'Text (free format)',
+                    'code'                  => 'Code (highlight)',
+                    'chapter_number'        => 'Chapter number',
+                    'chapter_title'         => 'Chapter title',
+                    'chapter_description'   => 'Chapter description',
+                    'page_title'            => 'Page title',
+                    'headline'              => 'Headline',
+                    'subtitle'              => 'Subtitle',
+                    'head_text'             => 'Head text',
+                    'tooltip'               => 'Tooltip',
+                    'sound'                 => 'Sound',
+                    'video'                 => 'Video',
+                    'image_popup'           => 'Image',
+                    'first_capital'         => 'Acronym (caps on first letter)',
+                    'submit_button'         => 'Button: submit',
+                    'selector'              => 'Button: selector',
+                    'selector_wide'         => 'Button: selector wide',
+                    'selector_yes_no'       => 'Button: yes/no',
+                    'selector_choice'       => 'Button: selector choice',
+                    'selector_section'      => 'Button: selector section',
+                    'selector_section_wide' => 'Button: selector section wide',
+                    'selector_popup'        => 'Button: selector popup'
+                ],
+ when the type is updated it triggers the function onupdateType which will assign the correct onclick function according to the type of the widget.
+- section_id : integer : The widget can interact with a section depending on if the widget is of type 'selector_section' or 'selector_section_wide'.
+- image_url : string :  The widget may need a url if of type : image_popup', 'selector_popup', 'selector_section', 'selector_section_wide'
+- video_url : string :  The widget may need a url if of type 'video'
+- sound_url : string :  The widget may need a url if of type 'sound'
+- has_separator_left : boolean
+- has_separator_right : boolean
+- on_click : string : action on the click among the 'selection'         => [
+                    'ignore'        => 'do nothing',
+//                    'select()'    => 'select',
+                    'select_one()'  => 'select',
+                    'submit()'      => 'submit',
+                    'image_full()'  => 'show image',
+                    'play()'        => 'play media'
+                ],
+
+
+## UserAccess
+
+It is defined by :
+- code : computed result type integer function getCode : a unique identifier used for generating verification url
+- code_alpha : computed result type string function getCodeAlpha: retrieve the pack based on verification url code of 4 chars (3 letters + 1 digit).
+- pack_id: relation many2one : many users can access one pack
+- master_user_id : integer :in case of multiaccounts, external user id.
+- user_id : integer : External user identifier that is granted access
+- is_complete : computed result type boolean, function getIsComplete : The user has finished the programs modules from the UserStatus the value is_complete is set to true.
+
+
+
+## UserStatus
+
+
+
 
 
 
